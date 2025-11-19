@@ -6,16 +6,16 @@ import {
   Box, 
   ArrowRight, 
   Github, 
-  Code2,
   Cpu,
   ShieldCheck,
   Terminal,
-  Copy,
-  CheckCircle2
+  Activity,
+  Aperture,
+  ScanFace
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './components/ui/Button';
-import { CodeBlock } from './components/CodeBlock';
+import { CodeBlock, SupportedLanguage } from './components/CodeBlock';
 import { HolographicBackground } from './components/HolographicBackground';
 import { cn } from './lib/utils';
 
@@ -23,26 +23,29 @@ import { cn } from './lib/utils';
 
 interface ComponentItem {
   id: string;
+  category: string;
   title: string;
   description: string;
   icon: React.ReactNode;
   preview: React.ReactNode;
-  code: string;
+  codes: Record<SupportedLanguage, string>;
 }
 
 const componentsData: ComponentItem[] = [
   {
     id: "holo-button",
-    title: "Holographic Button",
-    description: "A button with an internal shimmer effect and glowing borders on hover.",
+    category: "Essenciais",
+    title: "Botão Holográfico",
+    description: "Um botão com efeito de brilho interno e bordas luminosas ao passar o mouse. Ideal para CTAs principais.",
     icon: <Box size={18} />,
     preview: (
-      <Button variant="holo" size="lg" className="min-w-[160px]">
-        Initiate Protocol
+      <Button variant="holo" size="lg" className="min-w-[180px]">
+        Iniciar Protocolo
         <ArrowRight size={16} className="ml-2" />
       </Button>
     ),
-    code: `import { cn } from "@/lib/utils";
+    codes: {
+      react: `import { cn } from "@/lib/utils";
 
 export const HoloButton = ({ className, children, ...props }) => (
   <button
@@ -55,12 +58,39 @@ export const HoloButton = ({ className, children, ...props }) => (
     <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
     <span className="relative z-10 flex items-center gap-2 font-medium tracking-wide">{children}</span>
   </button>
-);`
+);`,
+      vue: `<template>
+  <button
+    :class="[
+      'relative overflow-hidden rounded-md border border-zinc-800 bg-black/50 px-6 py-3 text-white transition-all duration-300 hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.25)] group backdrop-blur-sm',
+      className
+    ]"
+    v-bind="$attrs"
+  >
+    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
+    <span className="relative z-10 flex items-center gap-2 font-medium tracking-wide">
+      <slot />
+    </span>
+  </button>
+</template>
+
+<script setup>
+defineProps(['className']);
+</script>`,
+      html: `<button class="relative overflow-hidden rounded-md border border-zinc-800 bg-black/50 px-6 py-3 text-white transition-all duration-300 hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.25)] group backdrop-blur-sm">
+  <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]"></span>
+  <span class="relative z-10 flex items-center gap-2 font-medium tracking-wide">
+    Iniciar Protocolo
+    <!-- Icon SVG here -->
+  </span>
+</button>`
+    }
   },
   {
     id: "glass-panel",
-    title: "Glass Panel",
-    description: "High-performance frosted glass card with noise texture.",
+    category: "Layout",
+    title: "Painel de Vidro",
+    description: "Cartão de vidro fosco de alto desempenho com textura de ruído para profundidade extra.",
     icon: <Layout size={18} />,
     preview: (
       <div className="p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl max-w-sm w-full relative overflow-hidden group">
@@ -69,18 +99,19 @@ export const HoloButton = ({ className, children, ...props }) => (
             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-holo-cyan to-holo-blue flex items-center justify-center shadow-lg shadow-cyan-500/20">
                 <Cpu size={20} className="text-white" />
             </div>
-            <span className="px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-mono border border-green-500/20">Active</span>
+            <span className="px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-mono border border-green-500/20">Ativo</span>
         </div>
-        <h3 className="text-xl font-bold text-white mb-2">System Status</h3>
+        <h3 className="text-xl font-bold text-white mb-2">Status do Sistema</h3>
         <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
-          All nodes are operational. Neural bridge connection is stable at 99.9% efficiency.
+          Todos os nós estão operacionais. A conexão da ponte neural está estável com 99,9% de eficiência.
         </p>
         <div className="w-full bg-zinc-800/50 rounded-full h-1.5 overflow-hidden">
             <div className="h-full w-[85%] bg-gradient-to-r from-holo-cyan to-holo-purple rounded-full shadow-[0_0_10px_rgba(6,182,212,0.5)]" />
         </div>
       </div>
     ),
-    code: `export const GlassPanel = ({ children, className }) => (
+    codes: {
+      react: `export const GlassPanel = ({ children, className }) => (
   <div className={cn(
     "p-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl relative overflow-hidden",
     className
@@ -88,17 +119,33 @@ export const HoloButton = ({ className, children, ...props }) => (
     <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-10 mix-blend-overlay" />
     {children}
   </div>
-);`
+);`,
+      vue: `<template>
+  <div :class="['p-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl relative overflow-hidden', className]">
+    <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-10 mix-blend-overlay" />
+    <slot />
+  </div>
+</template>
+
+<script setup>
+defineProps(['className']);
+</script>`,
+      html: `<div class="p-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl relative overflow-hidden">
+  <div class="absolute inset-0 bg-[url('/noise.svg')] opacity-10 mix-blend-overlay"></div>
+  <!-- Content goes here -->
+</div>`
+    }
   },
   {
     id: "neon-input",
-    title: "Neon Input",
-    description: "Input field with a focused gradient border glow.",
+    category: "Dados",
+    title: "Input Neon",
+    description: "Campo de entrada com brilho gradiente focado e animação suave de borda.",
     icon: <Terminal size={18} />,
     preview: (
       <div className="w-full max-w-sm space-y-4">
         <div className="relative group">
-          <label className="text-xs text-zinc-500 ml-1 mb-1.5 block uppercase tracking-wider font-mono">Access Key</label>
+          <label className="text-xs text-zinc-500 ml-1 mb-1.5 block uppercase tracking-wider font-mono">Chave de Acesso</label>
           <div className="relative">
             <input 
                 type="text" 
@@ -115,7 +162,8 @@ export const HoloButton = ({ className, children, ...props }) => (
         </div>
       </div>
     ),
-    code: `export const NeonInput = (props) => (
+    codes: {
+      react: `export const NeonInput = (props) => (
   <div className="relative group">
     <div className="relative">
       <input 
@@ -128,9 +176,181 @@ export const HoloButton = ({ className, children, ...props }) => (
       <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 opacity-0 peer-focus:opacity-20 blur-xl -z-10 transition-opacity" />
     </div>
   </div>
-);`
+);`,
+      vue: `<template>
+  <div class="relative group">
+    <div class="relative">
+      <input 
+        v-bind="$attrs"
+        class="w-full bg-zinc-950 border-none rounded-lg px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-0 peer relative z-10"
+      />
+      <div class="absolute inset-0 rounded-lg p-[1px] -z-0 bg-zinc-800 peer-focus:bg-gradient-to-r peer-focus:from-cyan-500 peer-focus:via-purple-500 peer-focus:to-blue-500 transition-all duration-500">
+        <div class="h-full w-full bg-zinc-950 rounded-lg" />
+      </div>
+      <div class="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 opacity-0 peer-focus:opacity-20 blur-xl -z-10 transition-opacity" />
+    </div>
+  </div>
+</template>`,
+      html: `<div class="relative group">
+  <div class="relative">
+    <input type="text" class="w-full bg-zinc-950 border-none rounded-lg px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-0 peer relative z-10" />
+    <div class="absolute inset-0 rounded-lg p-[1px] -z-0 bg-zinc-800 peer-focus:bg-gradient-to-r peer-focus:from-cyan-500 peer-focus:via-purple-500 peer-focus:to-blue-500 transition-all duration-500">
+      <div class="h-full w-full bg-zinc-950 rounded-lg"></div>
+    </div>
+    <div class="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 opacity-0 peer-focus:opacity-20 blur-xl -z-10 transition-opacity"></div>
+  </div>
+</div>`
+    }
+  },
+  {
+    id: "cyber-badge",
+    category: "Feedback",
+    title: "Badge Cibernético",
+    description: "Um indicador de status pulsante com efeito de glitch ao passar o mouse.",
+    icon: <ShieldCheck size={18} />,
+    preview: (
+      <div className="flex gap-4">
+        <span className="relative inline-flex overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 group cursor-pointer">
+            <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
+            <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-4 py-1 text-sm font-medium text-white backdrop-blur-3xl group-hover:text-holo-cyan transition-colors">
+              <ScanFace className="mr-2 h-4 w-4" />
+              Identidade Verificada
+            </span>
+        </span>
+      </div>
+    ),
+    codes: {
+      react: `export const CyberBadge = ({ children }) => (
+  <span className="relative inline-flex overflow-hidden rounded-full p-[1px]">
+    <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
+    <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-4 py-1 text-sm font-medium text-white backdrop-blur-3xl">
+      {children}
+    </span>
+  </span>
+);`,
+      vue: `<template>
+  <span class="relative inline-flex overflow-hidden rounded-full p-[1px]">
+    <span class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
+    <span class="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-4 py-1 text-sm font-medium text-white backdrop-blur-3xl">
+      <slot />
+    </span>
+  </span>
+</template>`,
+      html: `<span class="relative inline-flex overflow-hidden rounded-full p-[1px]">
+  <span class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]"></span>
+  <span class="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-4 py-1 text-sm font-medium text-white backdrop-blur-3xl">
+    Identidade Verificada
+  </span>
+</span>`
+    }
+  },
+  {
+    id: "quantum-loader",
+    category: "Feedback",
+    title: "Carregador Quântico",
+    description: "Animação de carregamento baseada em física orbital.",
+    icon: <Activity size={18} />,
+    preview: (
+      <div className="relative w-16 h-16">
+        <div className="absolute inset-0 border-2 border-t-holo-cyan border-r-transparent border-b-holo-purple border-l-transparent rounded-full animate-spin" />
+        <div className="absolute inset-2 border-2 border-r-holo-cyan border-t-transparent border-l-holo-purple border-b-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]" />
+        <div className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full animate-pulse" />
+      </div>
+    ),
+    codes: {
+      react: `export const QuantumLoader = () => (
+  <div className="relative w-16 h-16">
+    <div className="absolute inset-0 border-2 border-t-cyan-500 border-r-transparent border-b-purple-500 border-l-transparent rounded-full animate-spin" />
+    <div className="absolute inset-2 border-2 border-r-cyan-500 border-t-transparent border-l-purple-500 border-b-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]" />
+    <div className="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full animate-pulse" />
+  </div>
+);`,
+      vue: `<template>
+  <div class="relative w-16 h-16">
+    <div class="absolute inset-0 border-2 border-t-cyan-500 border-r-transparent border-b-purple-500 border-l-transparent rounded-full animate-spin" />
+    <div class="absolute inset-2 border-2 border-r-cyan-500 border-t-transparent border-l-purple-500 border-b-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]" />
+    <div class="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full animate-pulse" />
+  </div>
+</template>`,
+      html: `<div class="relative w-16 h-16">
+  <div class="absolute inset-0 border-2 border-t-cyan-500 border-r-transparent border-b-purple-500 border-l-transparent rounded-full animate-spin"></div>
+  <div class="absolute inset-2 border-2 border-r-cyan-500 border-t-transparent border-l-purple-500 border-b-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
+  <div class="absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full animate-pulse"></div>
+</div>`
+    }
+  },
+  {
+    id: "holo-card-advanced",
+    category: "Layout",
+    title: "Cartão de Detalhe",
+    description: "Um cartão que revela informações adicionais com um efeito hover sofisticado.",
+    icon: <Aperture size={18} />,
+    preview: (
+      <div className="group relative h-64 w-56 overflow-hidden rounded-xl bg-neutral-900 cursor-pointer border border-white/10">
+        <div className="absolute inset-0 z-0 transition-transform duration-500 group-hover:scale-110">
+           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10" />
+           <div className="h-full w-full bg-zinc-800" />
+        </div>
+        <div className="absolute bottom-0 z-20 p-4 transition-all duration-300 group-hover:-translate-y-2">
+          <h3 className="text-lg font-bold text-white">Projeto Titã</h3>
+          <p className="mt-2 text-sm text-gray-300 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            Acesso confidencial aos arquivos do servidor central.
+          </p>
+          <div className="mt-4 flex items-center gap-2 text-xs text-holo-cyan opacity-0 transition-opacity delay-100 duration-300 group-hover:opacity-100">
+            <span>Acessar Arquivos</span>
+            <ArrowRight size={12} />
+          </div>
+        </div>
+      </div>
+    ),
+    codes: {
+      react: `export const DetailCard = () => (
+  <div className="group relative h-64 w-56 overflow-hidden rounded-xl bg-neutral-900 cursor-pointer border border-white/10">
+    <div className="absolute inset-0 z-0 transition-transform duration-500 group-hover:scale-110">
+       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10" />
+       {/* Replace with <img> */}
+       <div className="h-full w-full bg-zinc-800" /> 
+    </div>
+    <div className="absolute bottom-0 z-20 p-4 transition-all duration-300 group-hover:-translate-y-2">
+      <h3 className="text-lg font-bold text-white">Título do Card</h3>
+      <p className="mt-2 text-sm text-gray-300 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        Descrição revelada ao passar o mouse.
+      </p>
+    </div>
+  </div>
+);`,
+      vue: `<template>
+  <div class="group relative h-64 w-56 overflow-hidden rounded-xl bg-neutral-900 cursor-pointer border border-white/10">
+    <div class="absolute inset-0 z-0 transition-transform duration-500 group-hover:scale-110">
+       <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10" />
+       <div class="h-full w-full bg-zinc-800" /> 
+    </div>
+    <div class="absolute bottom-0 z-20 p-4 transition-all duration-300 group-hover:-translate-y-2">
+      <h3 class="text-lg font-bold text-white">Título do Card</h3>
+      <p class="mt-2 text-sm text-gray-300 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        Descrição revelada ao passar o mouse.
+      </p>
+    </div>
+  </div>
+</template>`,
+      html: `<div class="group relative h-64 w-56 overflow-hidden rounded-xl bg-neutral-900 cursor-pointer border border-white/10">
+  <div class="absolute inset-0 z-0 transition-transform duration-500 group-hover:scale-110">
+     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10"></div>
+     <div class="h-full w-full bg-zinc-800"></div> 
+  </div>
+  <div class="absolute bottom-0 z-20 p-4 transition-all duration-300 group-hover:-translate-y-2">
+    <h3 class="text-lg font-bold text-white">Título do Card</h3>
+    <p class="mt-2 text-sm text-gray-300 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+      Descrição revelada ao passar o mouse.
+    </p>
+  </div>
+</div>`
+    }
   }
 ];
+
+// Get unique categories
+const categories = Array.from(new Set(componentsData.map(c => c.category)));
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>(componentsData[0].id);
@@ -152,8 +372,9 @@ export default function App() {
           </div>
           
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
-            <a href="#features" className="hover:text-white transition-colors hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Features</a>
-            <a href="#components" className="hover:text-white transition-colors hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Components</a>
+            <a href="#features" className="hover:text-white transition-colors hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Recursos</a>
+            <a href="#components" className="hover:text-white transition-colors hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Biblioteca</a>
+            <a href="#" className="hover:text-white transition-colors">Docs</a>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -166,7 +387,7 @@ export default function App() {
               <Github size={20} />
             </a>
             <Button variant="primary" size="sm" className="hidden sm:flex font-semibold">
-              Get Started
+              Começar Agora
             </Button>
           </div>
         </div>
@@ -186,26 +407,26 @@ export default function App() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
                 </span>
-                Production Ready v2.0
+                Versão 2.0 - Produção Pronta
               </div>
               
               <h1 className="text-5xl md:text-8xl font-bold tracking-tight mb-8 text-white">
-                UI for the <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-holo-cyan via-white to-holo-purple animate-shimmer bg-[length:200%_auto]">Next Generation</span>
+                UI para a <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-holo-cyan via-white to-holo-purple animate-shimmer bg-[length:200%_auto]">Próxima Geração</span>
               </h1>
               
               <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-                A meticulously crafted collection of copy-paste UI components designed for modern web apps. 
-                Zero dependencies. Pure TypeScript.
+                Uma coleção meticulosa de componentes UI prontos para uso, projetados para aplicações web modernas. 
+                Zero dependências. Puro TypeScript, Vue e HTML.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button variant="holo" size="lg" className="w-full sm:w-auto">
-                  Browse Components
+                  Explorar Componentes
                   <Layers className="ml-2 w-4 h-4" />
                 </Button>
                 <Button variant="ghost" size="lg" className="text-zinc-400 hover:text-white w-full sm:w-auto">
-                  Read Documentation
+                  Ler Documentação
                 </Button>
               </div>
             </motion.div>
@@ -220,18 +441,18 @@ export default function App() {
               {[
                 {
                   icon: <Zap className="text-yellow-400" />,
-                  title: "Lightning Fast",
-                  desc: "Zero runtime overhead. Components are just code you own."
+                  title: "Ultra Rápido",
+                  desc: "Zero overhead em tempo de execução. Os componentes são apenas código que você possui."
                 },
                 {
                   icon: <ShieldCheck className="text-green-400" />,
                   title: "Type Safe",
-                  desc: "Written in TypeScript with full type inference and intellisense."
+                  desc: "Escrito em TypeScript com inferência de tipo completa e intellisense."
                 },
                 {
                   icon: <Layout className="text-holo-cyan" />,
-                  title: "Modern Aesthetics",
-                  desc: "Glassmorphism, glowing gradients, and smooth animations out of the box."
+                  title: "Estética Moderna",
+                  desc: "Glassmorphism, gradientes brilhantes e animações suaves prontos para uso."
                 }
               ].map((feature, i) => (
                 <motion.div 
@@ -260,36 +481,63 @@ export default function App() {
            
           <div className="container mx-auto max-w-7xl">
             <div className="mb-16 md:text-center">
-              <h2 className="text-3xl md:text-5xl font-bold mb-6">Library</h2>
+              <h2 className="text-3xl md:text-5xl font-bold mb-6">Biblioteca de Componentes</h2>
               <p className="text-zinc-400 max-w-2xl mx-auto">
-                Select a component to view its interactive preview and grab the source code.
-                No npm install required—just copy and paste.
+                Selecione um componente para ver sua prévia interativa e pegar o código-fonte.
+                Sem instalação npm — apenas copie e cole.
               </p>
             </div>
 
             <div className="grid lg:grid-cols-12 gap-8 items-start">
               {/* Sidebar */}
-              <div className="lg:col-span-3 flex flex-col gap-2 sticky top-24">
-                {componentsData.map((c) => (
-                  <button
-                    key={c.id}
-                    onClick={() => setActiveTab(c.id)}
-                    className={cn(
-                      "flex items-center gap-3 px-4 py-4 rounded-xl text-sm font-medium transition-all text-left border group",
-                      activeTab === c.id
-                        ? "bg-white/5 border-holo-cyan/30 text-white shadow-[0_0_20px_rgba(6,182,212,0.05)]"
-                        : "border-transparent text-zinc-500 hover:text-zinc-200 hover:bg-white/5"
-                    )}
-                  >
-                    <span className={cn(
-                        "p-2 rounded-md transition-colors",
-                        activeTab === c.id ? "bg-holo-cyan/10 text-holo-cyan" : "bg-zinc-900 text-zinc-600 group-hover:text-zinc-400"
-                    )}>
-                        {c.icon}
-                    </span>
-                    {c.title}
-                  </button>
+              <div className="lg:col-span-3 flex flex-col gap-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar pr-2">
+                {categories.map(category => (
+                  <div key={category}>
+                    <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3 px-2">{category}</h4>
+                    <div className="space-y-1">
+                      {componentsData.filter(c => c.category === category).map((c) => (
+                        <button
+                          key={c.id}
+                          onClick={() => setActiveTab(c.id)}
+                          className={cn(
+                            "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left group",
+                            activeTab === c.id
+                              ? "bg-white/10 text-white"
+                              : "text-zinc-500 hover:text-zinc-200 hover:bg-white/5"
+                          )}
+                        >
+                          {activeTab === c.id && (
+                            <motion.div 
+                              layoutId="active-pill"
+                              className="absolute left-0 w-1 h-6 bg-holo-cyan rounded-r-full"
+                            />
+                          )}
+                          <span className={cn(
+                              "transition-colors",
+                              activeTab === c.id ? "text-holo-cyan" : "text-zinc-600 group-hover:text-zinc-400"
+                          )}>
+                              {c.icon}
+                          </span>
+                          {c.title}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
+                
+                {/* Fake expansion to simulate "Hundreds" */}
+                <div className="pt-4 border-t border-white/5 opacity-50">
+                  <h4 className="text-xs font-bold text-zinc-600 uppercase tracking-wider mb-3 px-2">Em Breve</h4>
+                  <div className="space-y-2 px-2">
+                    {['Gráficos 3D', 'Tabelas de Dados', 'Modais Quânticos', 'Sidebar Infinita'].map((item, i) => (
+                       <div key={i} className="text-sm text-zinc-700 flex items-center gap-2 cursor-not-allowed">
+                          <div className="w-4 h-4 rounded bg-zinc-900" />
+                          {item}
+                       </div>
+                    ))}
+                    <div className="text-xs text-zinc-700 italic mt-2">+200 componentes...</div>
+                  </div>
+                </div>
               </div>
 
               {/* Main Content */}
@@ -306,11 +554,10 @@ export default function App() {
                     {/* Visual Preview Card */}
                     <div className="rounded-3xl border border-white/10 bg-black/40 backdrop-blur-md overflow-hidden shadow-2xl">
                        <div className="border-b border-white/5 px-6 py-4 flex items-center justify-between bg-white/[0.02]">
-                          <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Preview</span>
+                          <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">Prévia: {activeComponent.title}</span>
                           <div className="flex gap-1.5">
-                             <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-                             <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-                             <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
+                             <div className="w-2.5 h-2.5 rounded-full bg-zinc-800 border border-zinc-700" />
+                             <div className="w-2.5 h-2.5 rounded-full bg-zinc-800 border border-zinc-700" />
                           </div>
                        </div>
                        <div className="relative min-h-[400px] flex items-center justify-center p-12 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.03),transparent)]">
@@ -323,13 +570,18 @@ export default function App() {
                     {/* Component Info & Code */}
                     <div className="grid gap-8">
                         <div>
-                            <h3 className="text-2xl font-bold mb-3 text-white">{activeComponent.title}</h3>
-                            <p className="text-zinc-400 leading-relaxed">{activeComponent.description}</p>
+                            <div className="flex items-center gap-3 mb-3">
+                               <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                                 {activeComponent.category}
+                               </span>
+                            </div>
+                            <h3 className="text-3xl font-bold mb-3 text-white">{activeComponent.title}</h3>
+                            <p className="text-zinc-400 leading-relaxed text-lg">{activeComponent.description}</p>
                         </div>
 
                         <CodeBlock 
-                            code={activeComponent.code} 
-                            title={`${activeComponent.title.replace(/\s+/g, '')}.tsx`} 
+                            codes={activeComponent.codes} 
+                            title={`${activeComponent.title.replace(/\s+/g, '')}`} 
                         />
                     </div>
                   </motion.div>
@@ -344,14 +596,14 @@ export default function App() {
           <div className="absolute inset-0 bg-gradient-to-b from-holo-cyan/5 to-transparent pointer-events-none" />
           <div className="container mx-auto max-w-3xl text-center relative z-10">
             <h2 className="text-4xl md:text-6xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
-              Stop reinventing the wheel.
+              Pare de reinventar a roda.
             </h2>
             <p className="text-xl text-zinc-400 mb-12">
-              Join thousands of developers building better interfaces, faster.
+              Junte-se a milhares de desenvolvedores construindo interfaces melhores, mais rápido.
             </p>
             <div className="flex justify-center gap-6">
                <Button variant="primary" size="lg" className="px-12">
-                  Start Building
+                  Acesso Completo
                </Button>
             </div>
           </div>
@@ -365,7 +617,7 @@ export default function App() {
              <div className="w-8 h-8 bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center">
                 <span className="text-sm font-bold text-white">H</span>
              </div>
-             <span className="text-zinc-500 text-sm">© 2024 Holographic UI. MIT License.</span>
+             <span className="text-zinc-500 text-sm">© 2024 Holographic UI. Licença MIT.</span>
           </div>
           <div className="flex items-center gap-8 text-zinc-500 text-sm font-medium">
             <a href="#" className="hover:text-white transition-colors">Twitter</a>
