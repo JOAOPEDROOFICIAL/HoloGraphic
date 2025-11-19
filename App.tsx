@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { 
   Layers, 
-  Zap, 
   Layout, 
   Box, 
   ArrowRight, 
@@ -14,15 +13,12 @@ import {
   ScanFace,
   ToggleRight,
   Sliders,
-  Menu,
-  AlertTriangle,
-  MessageSquare,
   Loader2,
   BarChart3,
   Ghost,
   ChevronRight,
-  Search,
-  Bell
+  Lock,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './components/ui/Button';
@@ -821,7 +817,13 @@ const categories = Array.from(new Set(componentsData.map(c => c.category)));
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>(componentsData[0].id);
+  const [isGithubModalOpen, setIsGithubModalOpen] = useState(false);
   const activeComponent = componentsData.find(c => c.id === activeTab) || componentsData[0];
+
+  const openGithubModal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsGithubModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen text-zinc-100 selection:bg-holo-cyan/30 selection:text-white relative font-sans">
@@ -845,14 +847,12 @@ export default function App() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <a 
-              href="https://github.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="p-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-md transition-colors"
+            <button 
+              onClick={openGithubModal}
+              className="p-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-md transition-colors cursor-pointer"
             >
               <Github size={20} />
-            </a>
+            </button>
             <Button variant="primary" size="sm" className="hidden sm:flex font-semibold">
               Começar Agora
             </Button>
@@ -1012,12 +1012,81 @@ export default function App() {
               <h2 className="text-3xl font-bold mb-4">Pronto para o futuro?</h2>
               <p className="text-zinc-400 mb-8">Comece a construir interfaces impossíveis hoje.</p>
               <div className="flex justify-center gap-4">
-                 <Button variant="secondary" size="md">Github</Button>
+                 <Button 
+                    variant="secondary" 
+                    size="md"
+                    onClick={openGithubModal}
+                 >
+                   Github
+                 </Button>
                  <Button variant="primary" size="md">Discord</Button>
               </div>
            </div>
         </section>
       </main>
+
+      {/* High-Level Github Modal */}
+      <AnimatePresence>
+        {isGithubModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsGithubModalOpen(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+            
+            {/* Modal Content */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#09090b] p-1 shadow-[0_0_50px_rgba(6,182,212,0.2)]"
+            >
+              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+              
+              {/* Decorative Top Line */}
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-holo-cyan to-transparent" />
+
+              <div className="relative bg-zinc-900/50 rounded-xl p-8 text-center border border-white/5">
+                <button 
+                  onClick={() => setIsGithubModalOpen(false)}
+                  className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
+                >
+                  <X size={20} />
+                </button>
+
+                <div className="flex justify-center mb-6">
+                  <div className="relative flex items-center justify-center w-16 h-16 rounded-full bg-zinc-900 border border-white/10 shadow-[0_0_30px_rgba(6,182,212,0.3)]">
+                    <div className="absolute inset-0 rounded-full bg-holo-cyan/20 animate-pulse" />
+                    <Lock className="w-8 h-8 text-holo-cyan relative z-10" />
+                  </div>
+                </div>
+
+                <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Acesso Restrito</h3>
+                <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono uppercase mb-6">
+                  <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                  Protocolo Bloqueado
+                </div>
+
+                <p className="text-zinc-400 mb-8 leading-relaxed">
+                  O repositório central do <span className="text-white font-medium">HoloGraphic</span> está passando por refinamento quântico. O código fonte completo será disponibilizado publicamente na versão <span className="font-mono text-holo-cyan">v4.0</span>.
+                </p>
+
+                <Button 
+                  variant="holo" 
+                  className="w-full justify-center"
+                  onClick={() => setIsGithubModalOpen(false)}
+                >
+                  Entendido
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

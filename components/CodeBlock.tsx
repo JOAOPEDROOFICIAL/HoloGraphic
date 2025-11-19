@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, Copy, Terminal, Code2, FileJson } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 import { cn, copyToClipboard } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,10 +16,11 @@ const languageLabels: Record<SupportedLanguage, string> = {
   html: 'HTML / Tailwind'
 };
 
+// Using official SVG logos via CDN for high-level professional look
 const languageIcons: Record<SupportedLanguage, React.ReactNode> = {
-  react: <Code2 size={14} />,
-  vue: <Terminal size={14} />,
-  html: <FileJson size={14} />
+  react: <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" alt="React" className="w-4 h-4 object-contain" />,
+  vue: <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" alt="Vue" className="w-4 h-4 object-contain" />,
+  html: <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML" className="w-4 h-4 object-contain" />
 };
 
 export const CodeBlock: React.FC<CodeBlockProps> = ({ codes, title }) => {
@@ -36,19 +37,21 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ codes, title }) => {
     <div className="rounded-lg overflow-hidden border border-white/10 bg-black/50 backdrop-blur-sm my-4 shadow-2xl">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white/5 border-b border-white/5">
         {/* Language Tabs */}
-        <div className="flex items-center w-full sm:w-auto overflow-x-auto">
+        <div className="flex items-center w-full sm:w-auto overflow-x-auto no-scrollbar">
           {(Object.keys(codes) as SupportedLanguage[]).map((lang) => (
             <button
               key={lang}
               onClick={() => setActiveLang(lang)}
               className={cn(
-                "flex items-center gap-2 px-4 py-3 text-xs font-mono uppercase tracking-wide transition-colors border-r border-white/5",
+                "flex items-center gap-2 px-4 py-3 text-xs font-mono uppercase tracking-wide transition-colors border-r border-white/5 min-w-fit",
                 activeLang === lang 
-                  ? "bg-white/10 text-holo-cyan font-bold" 
+                  ? "bg-white/10 text-white font-bold" 
                   : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
               )}
             >
-              {languageIcons[lang]}
+              <span className={cn("transition-transform duration-300", activeLang === lang ? "scale-110 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" : "grayscale opacity-70")}>
+                {languageIcons[lang]}
+              </span>
               {languageLabels[lang]}
             </button>
           ))}
@@ -56,10 +59,10 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ codes, title }) => {
 
         {/* Actions */}
         <div className="flex items-center justify-end w-full sm:w-auto px-4 py-2 gap-3">
-          <span className="text-xs text-zinc-600 hidden sm:inline-block">{title || 'Component Source'}</span>
+          <span className="text-xs text-zinc-600 hidden sm:inline-block font-mono">{title || 'SOURCE_CODE'}</span>
           <button
             onClick={handleCopy}
-            className="flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors bg-white/5 px-3 py-1.5 rounded-md hover:bg-white/10"
+            className="flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors bg-white/5 px-3 py-1.5 rounded-md hover:bg-white/10 border border-white/5 hover:border-white/20"
           >
             <AnimatePresence mode="wait" initial={false}>
               {copied ? (
@@ -68,10 +71,10 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ codes, title }) => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 text-green-400"
                 >
-                  <Check size={14} className="text-green-400" />
-                  <span>Copiado!</span>
+                  <Check size={14} />
+                  <span className="font-bold">COPIADO</span>
                 </motion.div>
               ) : (
                 <motion.div
@@ -82,7 +85,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ codes, title }) => {
                   className="flex items-center gap-2"
                 >
                   <Copy size={14} />
-                  <span>Copiar Código</span>
+                  <span>COPIAR</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -92,7 +95,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ codes, title }) => {
 
       <div className="relative group">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-holo-cyan via-holo-purple to-holo-blue opacity-0 group-hover:opacity-30 transition-opacity duration-500" />
-        <div className="p-4 overflow-x-auto max-h-[400px] overflow-y-auto custom-scrollbar">
+        <div className="p-4 overflow-x-auto max-h-[400px] overflow-y-auto custom-scrollbar bg-[#09090b]">
           <pre className="font-mono text-sm text-zinc-300 leading-relaxed">
             <code>{codes[activeLang]}</code>
           </pre>
